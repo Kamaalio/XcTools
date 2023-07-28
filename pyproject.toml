@@ -1,15 +1,20 @@
-[tool.poetry]
-name = "xctools"
-version = "0.1.0"
-description = ""
-authors = ["Kamaal Farah <kamaal.f1@gmail.com>"]
-readme = "README.md"
-license = "MIT"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xctools_kamaalio"
+version = "0.0.2"
+authors = [{ name = "Kamaal Farah", email = "kamaal.f1@gmail.com" }]
+description = "A package to help deal with Xcode projects."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/kamaal111/xctools"
+"Bug Tracker" = "https://github.com/kamaal111/xctools/issues"
