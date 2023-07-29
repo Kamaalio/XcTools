@@ -11,6 +11,10 @@ upload:
     . .venv/bin/activate
     twine upload dist/*
 
+install-self:
+    . .venv/bin/activate
+    pip install -e .
+
 init-venv:
     python3 -m venv .venv
     . .venv/bin/activate

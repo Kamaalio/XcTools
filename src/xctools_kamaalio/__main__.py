@@ -1,5 +1,5 @@
-from xctools_kamaalio import hello
+from .cli import cli
 
 
 if __name__ == "__main__":
-    print(hello())
+    cli()
