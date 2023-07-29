@@ -1,5 +1,7 @@
 set export
 
+build-and-upload: build upload
+
 build:
     rm -rf dist
     . .venv/bin/activate
