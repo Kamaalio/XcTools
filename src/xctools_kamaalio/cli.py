@@ -38,7 +38,7 @@ def cli():
 @click.option("--workspace")
 def archive(configuration, scheme, destination, sdk, archive_path, project, workspace):
     xctools = XcTools()
-    xctools.archive(
+    status = xctools.archive(
         scheme=scheme,
         configuration=configuration,
         destination=destination,
@@ -47,6 +47,7 @@ def archive(configuration, scheme, destination, sdk, archive_path, project, work
         project=project,
         workspace=workspace,
     )
+    print(status)
 
 
 class CLIException(Exception):

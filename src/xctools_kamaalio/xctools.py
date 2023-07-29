@@ -1,5 +1,5 @@
 import subprocess
-from typing import Literal, overload
+from typing import Literal
 
 
 Configuration = Literal["Debug", "Release"]
@@ -9,30 +9,6 @@ SDK = Literal["macosx", "iphoneos"]
 class XcTools:
     def __init__(self) -> None:
         pass
-
-    @overload
-    def archive(
-        self,
-        scheme: str,
-        configuration: Configuration,
-        destination: str,
-        sdk: SDK,
-        archive_path: str,
-        project: str,
-    ):
-        ...
-
-    @overload
-    def archive(
-        self,
-        scheme: str,
-        configuration: Configuration,
-        destination: str,
-        sdk: SDK,
-        archive_path: str,
-        workspace: str,
-    ):
-        ...
 
     def archive(
         self,
@@ -57,8 +33,9 @@ class XcTools:
         else:
             raise XcToolsException("No workspace or project provided")
 
-        print(command)
-        # subprocess.Popen
+        status = subprocess.Popen(command).wait()
+        if status != 0:
+            raise XcToolsException(f"Failed command with status='{status}'")
 
 
 class XcToolsException(Exception):
