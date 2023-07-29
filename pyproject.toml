@@ -2,8 +2,10 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+
 [project.scripts]
 xctools = "xctools_kamaalio:cli.cli"
+
 
 [project]
 name = "xctools_kamaalio"
@@ -17,6 +19,8 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = ["click >= 8.1.6"]
+
 
 [project.urls]
 "Homepage" = "https://github.com/kamaal111/xctools"

@@ -1,6 +1,13 @@
 set export
 
+default:
+  just --list
+
 build-and-upload: build upload
+
+run:
+    . .venv/bin/activate
+    python3 -c "from src.xctools_kamaalio.cli import cli; cli()" --action archive
 
 build:
     rm -rf dist
