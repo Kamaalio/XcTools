@@ -2,20 +2,14 @@ import subprocess
 from typing import Literal
 
 
-Configuration = Literal["Debug", "Release"]
-SDK = Literal["macosx", "iphoneos"]
-
-
 class XcTools:
-    def __init__(self) -> None:
-        pass
-
+    @classmethod
     def archive(
-        self,
+        cls,
         scheme: str,
-        configuration: Configuration,
+        configuration: Literal["Debug", "Release"],
         destination: str,
-        sdk: SDK,
+        sdk: Literal["macosx", "iphoneos"],
         archive_path: str,
         **kwargs,
     ):
@@ -32,10 +26,25 @@ class XcTools:
             command[-1] += f' -workspace "{workspace}"'
         else:
             raise XcToolsException("No workspace or project provided")
+        cls.__run_command(command, "archive")
 
-        status = subprocess.Popen(command).wait()
+    @classmethod
+    def upload(
+        cls, target: Literal["ios", "macos"], file: str, username: str, password: str
+    ):
+        command = [
+            "zsh",
+            "-c",
+            f'xcrun altool --upload-app -t {target} -f "{file}" -u {username} -p "{password}"',
+        ]
+        cls.__run_command(command, "upload")
+
+    @staticmethod
+    def __run_command(command: list[str], command_type: str):
+        process = subprocess.Popen(command)
+        status = process.wait()
         if status != 0:
-            raise XcToolsException(f"Failed command with status='{status}'")
+            raise XcToolsException(f"Failed {command_type} with status='{status}'")
 
 
 class XcToolsException(Exception):

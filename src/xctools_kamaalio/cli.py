@@ -6,7 +6,7 @@ from xctools_kamaalio.list_utils import removed, find_index
 from xctools_kamaalio.xctools import XcTools
 
 
-ACTIONS = ["archive"]
+ACTIONS = ["archive", "upload"]
 
 
 def cli():
@@ -16,8 +16,11 @@ def cli():
 
     action = sys.argv[action_index]
     sys.argv = removed(sys.argv, action_index)
+
     if action == "archive":
         archive()
+    if action == "upload":
+        upload()
 
 
 @click.command(context_settings={"ignore_unknown_options": True})
@@ -37,8 +40,7 @@ def cli():
 @click.option("--project")
 @click.option("--workspace")
 def archive(configuration, scheme, destination, sdk, archive_path, project, workspace):
-    xctools = XcTools()
-    status = xctools.archive(
+    XcTools.archive(
         scheme=scheme,
         configuration=configuration,
         destination=destination,
@@ -47,7 +49,19 @@ def archive(configuration, scheme, destination, sdk, archive_path, project, work
         project=project,
         workspace=workspace,
     )
-    print(status)
+
+
+@click.command(context_settings={"ignore_unknown_options": True})
+@click.option(
+    "--target",
+    type=click.Choice(["ios", "macos"], case_sensitive=False),
+    required=True,
+)
+@click.option("--file", required=True)
+@click.option("--username", required=True)
+@click.option("--password", required=True)
+def upload(target, file, username, password):
+    XcTools.upload(target=target, file=file, username=username, password=password)
 
 
 class CLIException(Exception):
