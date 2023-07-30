@@ -5,17 +5,6 @@ default:
 
 build-and-upload: build upload
 
-run:
-    . .venv/bin/activate
-
-    # python3 -c "from src.xctools_kamaalio.cli import cli; cli()" archive \
-    #     --configuration "Release" --scheme "UnixTime (iOS)" --destination "platform=iOS" \
-    #     --sdk "iphoneos" --archive-path "EpochStamp.xcarchive" --project "UnixTime.xcodeproj"
-
-    # python3 -c "from src.xctools_kamaalio.cli import cli; cli()" upload \
-    #     --target ios --file EpochStamp.ipa --username kamaal@email.com \
-    #     --password password
-
 build:
     rm -rf dist
     . .venv/bin/activate
