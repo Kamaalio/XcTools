@@ -19,7 +19,7 @@ class XcTools:
             "zsh",
             "-c",
             f'xcodebuild archive -scheme "{scheme}" -configuration {configuration}'
-            + f'-destination "{destination}" -sdk {sdk} -archivePath "{archive_path}"',
+            + f' -destination "{destination}" -sdk {sdk} -archivePath "{archive_path}"',
         ]
 
         if project := kwargs.get("project"):
@@ -50,7 +50,9 @@ class XcTools:
         process = subprocess.Popen(command)
         status = process.wait()
         if status != 0:
-            raise XcToolsException(f"Failed {command_type} with status='{status}'")
+            raise XcToolsException(
+                f"Failed {command_type} with status='{status}' on command='{command}'"
+            )
 
 
 class XcToolsException(Exception):
