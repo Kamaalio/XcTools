@@ -6,7 +6,7 @@ from xctools_kamaalio.list_utils import removed, find_index
 from xctools_kamaalio.xctools import XcTools
 
 
-ACTIONS = ["archive", "upload"]
+ACTIONS = ["archive", "upload", "bump-version"]
 
 
 def cli():
@@ -21,6 +21,15 @@ def cli():
         archive()
     if action == "upload":
         upload()
+    if action == "bump-version":
+        bump_version()
+
+
+@click.command(context_settings={"ignore_unknown_options": True})
+@click.option("--build-number", type=click.INT)
+@click.option("--version-number")
+def bump_version(build_number, version_number):
+    XcTools.bump_version(build_number=build_number, version_number=version_number)
 
 
 @click.command(context_settings={"ignore_unknown_options": True})

@@ -1,6 +1,8 @@
 import subprocess
 from typing import Literal
 
+from xctools_kamaalio.version_bumper import VersionBumber
+
 
 class XcTools:
     @classmethod
@@ -38,6 +40,10 @@ class XcTools:
             f'xcrun altool --upload-app -t {target} -f "{file}" -u {username} -p "{password}"',
         ]
         cls.__run_command(command, "upload")
+
+    @staticmethod
+    def bump_version(build_number: int | None, version_number: str | None):
+        VersionBumber.bump(build_number=build_number, version_number=version_number)
 
     @staticmethod
     def __run_command(command: list[str], command_type: str):
