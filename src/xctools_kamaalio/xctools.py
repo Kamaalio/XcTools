@@ -6,6 +6,16 @@ from xctools_kamaalio.version_bumper import VersionBumber
 
 class XcTools:
     @classmethod
+    def export_archive(cls, archive_path: str, export_options: str):
+        command = [
+            "zsh",
+            "-c",
+            f'xcodebuild -exportArchive -archivePath "{archive_path}" -exportPath . '
+            + f'-exportOptionsPlist "{export_options}"',
+        ]
+        cls.__run_command(command, "export-archive")
+
+    @classmethod
     def archive(
         cls,
         scheme: str,
@@ -18,8 +28,8 @@ class XcTools:
         command = [
             "zsh",
             "-c",
-            f'xcodebuild archive -scheme "{scheme}" -configuration {configuration}'
-            + f' -destination "{destination}" -sdk {sdk} -archivePath "{archive_path}"',
+            f'xcodebuild archive -scheme "{scheme}" -configuration {configuration} '
+            + f'-destination "{destination}" -sdk {sdk} -archivePath "{archive_path}"',
         ]
 
         if project := kwargs.get("project"):
