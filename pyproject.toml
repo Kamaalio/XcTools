@@ -9,7 +9,7 @@ xctools = "xctools_kamaalio:cli.cli"
 
 [project]
 name = "xctools_kamaalio"
-version = "0.0.5"
+version = "0.0.6"
 authors = [{ name = "Kamaal Farah", email = "kamaal.f1@gmail.com" }]
 description = "A package to help deal with Xcode projects."
 readme = "README.md"
@@ -23,5 +23,5 @@ dependencies = ["click >= 8.1.6"]
 
 
 [project.urls]
-"Homepage" = "https://github.com/kamaal111/xctools"
-"Bug Tracker" = "https://github.com/kamaal111/xctools/issues"
+"Homepage" = "https://github.com/Kamaalio/XcTools"
+"Bug Tracker" = "https://github.com/Kamaalio/XcTools/issues"
