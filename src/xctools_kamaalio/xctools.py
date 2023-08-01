@@ -1,7 +1,7 @@
 import subprocess
 from typing import Literal
 
-from xctools_kamaalio.version_bumper import VersionBumber
+from xctools_kamaalio.project_updater import ProjectUpdater
 
 
 class XcTools:
@@ -53,7 +53,8 @@ class XcTools:
 
     @staticmethod
     def bump_version(build_number: int | None, version_number: str | None):
-        VersionBumber.bump(build_number=build_number, version_number=version_number)
+        updater = ProjectUpdater()
+        updater.bump_version(build_number=build_number, version_number=version_number)
 
     @staticmethod
     def __run_command(command: list[str], command_type: str):
