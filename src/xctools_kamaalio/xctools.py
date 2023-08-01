@@ -1,4 +1,6 @@
+import json
 import subprocess
+from pathlib import Path
 from typing import Literal
 
 from xctools_kamaalio.project_updater import ProjectUpdater
@@ -55,6 +57,48 @@ class XcTools:
     def bump_version(build_number: int | None, version_number: str | None):
         updater = ProjectUpdater()
         updater.bump_version(build_number=build_number, version_number=version_number)
+
+    @classmethod
+    def trust_swift_version(cls, trust_file_path: str):
+        cls.__run_command(
+            command=["zsh", "-c", "mkdir -p ~/Library/org.swift.swiftpm/security/"],
+            command_type="create security folder",
+        )
+        cls.__run_command(
+            command=[
+                "zsh",
+                "-c",
+                "rm -f ~/Library/org.swift.swiftpm/security/plugins.json",
+            ],
+            command_type="remove plugins file",
+        )
+        cls.__run_command(
+            command=[
+                "zsh",
+                "-c",
+                "touch ~/Library/org.swift.swiftpm/security/plugins.json",
+            ],
+            command_type="create plugins file",
+        )
+        trust_file = Path(trust_file_path)
+        trust_file_content = json.loads(trust_file.read_text())
+        assert isinstance(trust_file_content, list)
+        trusted_plugins = []
+        for trust_config in trust_file_content:
+            for i in range(0, len(trusted_plugins)):
+                trusted_plugin = trusted_plugins[i]
+                if trusted_plugin["packageIdentity"] == trust_config["packageIdentity"]:
+                    trusted_plugins[i] = trust_config
+                    break
+            else:
+                trusted_plugins.append(trust_config)
+        for item in Path.home().glob("Library/org.swift.swiftpm"):
+            trust_output_file = item / "security/plugins.json"
+            break
+        else:
+            raise XcToolsException("Output file not found")
+
+        trust_output_file.write_text(json.dumps(trusted_plugins, indent=2))
 
     @staticmethod
     def __run_command(command: list[str], command_type: str):

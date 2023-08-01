@@ -1,14 +1,20 @@
 import sys
 
-
 from xctools_kamaalio.list_utils import removed, find_index
 from xctools_kamaalio.actions.upload import upload
 from xctools_kamaalio.actions.archive import archive
 from xctools_kamaalio.actions.bump_version import bump_version
 from xctools_kamaalio.actions.export_archive import export_archive
+from xctools_kamaalio.actions.trust_swift_plugins import trust_swift_plugins
 
 
-ACTIONS = ["archive", "upload", "bump-version", "export-archive"]
+ACTIONS = [
+    "archive",
+    "upload",
+    "bump-version",
+    "export-archive",
+    "trust-swift-plugins",
+]
 
 
 def cli():
@@ -27,6 +33,8 @@ def cli():
         bump_version()
     if action == "export-archive":
         export_archive()
+    if action == "trust-swift-plugins":
+        trust_swift_plugins()
 
 
 class CLIException(Exception):
