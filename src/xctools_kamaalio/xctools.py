@@ -60,10 +60,12 @@ class XcTools:
 
     @classmethod
     def trust_swift_version(cls, trust_file_path: str):
+        # TODO: DO THIS IN PYTHON INSTEAD
         cls.__run_command(
             command=["zsh", "-c", "mkdir -p ~/Library/org.swift.swiftpm/security/"],
             command_type="create security folder",
         )
+        # TODO: DO THIS IN PYTHON INSTEAD
         cls.__run_command(
             command=[
                 "zsh",
@@ -72,6 +74,7 @@ class XcTools:
             ],
             command_type="remove plugins file",
         )
+        # TODO: DO THIS IN PYTHON INSTEAD
         cls.__run_command(
             command=[
                 "zsh",

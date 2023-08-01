@@ -1,15 +1,13 @@
-from enum import Enum, auto
 from pathlib import Path
+from typing import Any
 
 
-class AutoName(Enum):
-    def _generate_next_value_(name, start, count, last_values):
-        return name
-
-
-class ProjectConfigurationKeys(AutoName):
-    CURRENT_PROJECT_VERSION = auto()
-    MARKETING_VERSION = auto()
+def omit_empty(dict_to_update: dict[str, Any]):
+    new_dict = {}
+    for key, value in dict_to_update.items():
+        if value:
+            new_dict[key] = value
+    return new_dict
 
 
 class ProjectUpdater:
@@ -25,17 +23,19 @@ class ProjectUpdater:
 
     def bump_version(self, build_number: int | None, version_number: str | None):
         has_changes = self.__edit(
-            object_to_update={
-                ProjectConfigurationKeys.CURRENT_PROJECT_VERSION: str(build_number),
-                ProjectConfigurationKeys.MARKETING_VERSION: version_number,
-            }
+            object_to_update=omit_empty(
+                {
+                    "CURRENT_PROJECT_VERSION": str(build_number),
+                    "MARKETING_VERSION": version_number,
+                }
+            )
         )
         if has_changes:
             print("Applied changes to xcode project")
         else:
             print("No changes where needed")
 
-    def __edit(self, object_to_update: dict[ProjectConfigurationKeys, str]):
+    def __edit(self, object_to_update: dict[str, str]):
         if object_to_update == {}:
             return False
 
@@ -46,7 +46,7 @@ class ProjectUpdater:
         has_changes = False
         for line_number, line in enumerate(project_configuration_file_lines):
             for key in keys_to_update:
-                if key.name not in line:
+                if key not in line:
                     continue
 
                 amount_of_tabs = line.count("\t")
