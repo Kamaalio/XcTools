@@ -105,7 +105,14 @@ class XcTools:
         trust_output_file.write_text(json.dumps(trusted_plugins, indent=2))
 
     @classmethod
-    def test(cls, configuration, scheme, destination, project, workspace):
+    def test(
+        cls,
+        configuration: Literal["Debug", "Release"],
+        scheme: str,
+        destination: str,
+        project: str | None,
+        workspace: str | None,
+    ):
         command = [
             "zsh",
             "-c",
@@ -120,6 +127,30 @@ class XcTools:
             raise XcToolsException("No workspace or project provided")
 
         cls.__run_command(command, "test")
+
+    @classmethod
+    def build(
+        cls,
+        configuration: Literal["Debug", "Release"],
+        scheme: str,
+        destination: str,
+        project: str | None,
+        workspace: str | None,
+    ):
+        command = [
+            "zsh",
+            "-c",
+            f'xcodebuild build -scheme "{scheme}" -configuration {configuration} -destination "{destination}"',
+        ]
+
+        if project:
+            command[-1] += f' -project "{project}"'
+        elif workspace:
+            command[-1] += f' -workspace "{workspace}"'
+        else:
+            raise XcToolsException("No workspace or project provided")
+
+        cls.__run_command(command, "build")
 
     @staticmethod
     def __run_command(command: list[str], command_type: str):

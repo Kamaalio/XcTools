@@ -7,6 +7,7 @@ from xctools_kamaalio.actions.bump_version import bump_version
 from xctools_kamaalio.actions.export_archive import export_archive
 from xctools_kamaalio.actions.trust_swift_plugins import trust_swift_plugins
 from xctools_kamaalio.actions.test import test
+from xctools_kamaalio.actions.build import build
 
 
 ACTIONS = [
@@ -16,6 +17,7 @@ ACTIONS = [
     "export-archive",
     "trust-swift-plugins",
     "test",
+    "build",
 ]
 
 
@@ -39,6 +41,8 @@ def cli():
         trust_swift_plugins()
     if action == "test":
         test()
+    if action == "build":
+        build()
 
 
 class CLIException(Exception):
