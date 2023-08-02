@@ -40,6 +40,7 @@ class XcTools:
             command[-1] += f' -workspace "{workspace}"'
         else:
             raise XcToolsException("No workspace or project provided")
+
         cls.__run_command(command, "archive")
 
     @classmethod
@@ -102,6 +103,23 @@ class XcTools:
             raise XcToolsException("Output file not found")
 
         trust_output_file.write_text(json.dumps(trusted_plugins, indent=2))
+
+    @classmethod
+    def test(cls, configuration, scheme, destination, project, workspace):
+        command = [
+            "zsh",
+            "-c",
+            f'xcodebuild test -scheme "{scheme}" -configuration {configuration} -destination "{destination}"',
+        ]
+
+        if project:
+            command[-1] += f' -project "{project}"'
+        elif workspace:
+            command[-1] += f' -workspace "{workspace}"'
+        else:
+            raise XcToolsException("No workspace or project provided")
+
+        cls.__run_command(command, "test")
 
     @staticmethod
     def __run_command(command: list[str], command_type: str):
