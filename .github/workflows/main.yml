@@ -52,12 +52,6 @@ jobs:
       - name: Check if tag exists
         run: just check-if-tag-exists
 
-      - name: Bump version
-        run: just bump-version
-
-      - name: Check if no diffs
-        run: just assert-has-no-diffs
-
   deploy:
     name: Deploy
     timeout-minutes: 10

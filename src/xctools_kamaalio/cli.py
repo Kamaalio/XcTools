@@ -1,6 +1,7 @@
 import sys
 
-from xctools_kamaalio.list_utils import removed, find_index
+from kamaaalpy.lists import removed, find_index
+
 from xctools_kamaalio.actions.upload import upload
 from xctools_kamaalio.actions.archive import archive
 from xctools_kamaalio.actions.bump_version import bump_version
