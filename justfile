@@ -35,22 +35,6 @@ install-deps:
     . .venv/bin/activate
     pip install -r requirements.txt
 
-bump-version:
-    #!/bin/bash
-
-    . .venv/bin/activate
-    . scripts/utils.bash
-
-    new_release_tag=$(extract_tag_from_release_branch)
-    python scripts/bump_version.py $new_release_tag
-
-assert-has-no-diffs:
-    #!/bin/bash
-
-    current_branch=$(git symbolic-ref --short HEAD)
-    diffs=$(git diff --name-only "origin/$current_branch" | sed '/^$/d' | awk '{print NR}'| sort -nr | sed -n '1p')
-    just assert-empty "$diffs"
-
 check-if-tag-exists:
     #!/bin/bash
 
@@ -75,11 +59,3 @@ check-if-tag-exists:
             exit 69
         fi
     done
-
-[private]
-assert-empty value:
-    #!/bin/bash
-
-    . .venv/bin/activate
-
-    python scripts/asserts/empty.py "{{ value }}"
