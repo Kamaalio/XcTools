@@ -2,6 +2,7 @@ import sys
 
 from kamaaalpy.lists import removed, find_index
 
+from xctools_kamaalio.actions.acknowledgments import acknowledgments
 from xctools_kamaalio.actions.upload import upload
 from xctools_kamaalio.actions.archive import archive
 from xctools_kamaalio.actions.bump_version import bump_version
@@ -19,6 +20,7 @@ ACTIONS = [
     "trust-swift-plugins",
     "test",
     "build",
+    "acknowledgments",
 ]
 
 
@@ -44,6 +46,8 @@ def cli():
         test()
     if action == "build":
         build()
+    if action == "acknowledgments":
+        acknowledgments()
 
 
 class CLIException(Exception):

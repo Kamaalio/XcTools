@@ -11,12 +11,19 @@ build:
     rm -rf dist
     . .venv/bin/activate
     python3 -m build
+    just install-self
 
 upload:
     #!/bin/bash
 
     . .venv/bin/activate
     twine upload dist/*
+
+test:
+    #!/bin/bash
+
+    . .venv/bin/activate
+    pytest
 
 install-self:
     #!/bin/bash
@@ -25,6 +32,8 @@ install-self:
     pip install -e .
 
 init-venv:
+    #!/bin/bash
+
     python3 -m venv .venv
     . .venv/bin/activate
     just install-deps
