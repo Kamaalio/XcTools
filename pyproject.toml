@@ -9,7 +9,7 @@ xctools = "xctools_kamaalio:cli.cli"
 
 [project]
 name = "xctools_kamaalio"
-version = "0.1.0"
+version = "0.2.0"
 authors = [{ name = "Kamaal Farah", email = "kamaal.f1@gmail.com" }]
 description = "A package to help deal with Xcode projects."
 readme = "README.md"
