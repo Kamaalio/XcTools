@@ -10,8 +10,8 @@ build:
 
     rm -rf dist
     . .venv/bin/activate
-    python3 -m build
     just install-self
+    python3 -m build
 
 upload:
     #!/bin/bash
@@ -19,7 +19,7 @@ upload:
     . .venv/bin/activate
     twine upload dist/*
 
-test:
+test: install-self
     #!/bin/bash
 
     . .venv/bin/activate
