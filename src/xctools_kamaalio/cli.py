@@ -13,45 +13,28 @@ from xctools_kamaalio.actions.test import test
 from xctools_kamaalio.actions.build import build
 
 
-ACTIONS = [
-    "archive",
-    "upload",
-    "bump-version",
-    "export-archive",
-    "trust-swift-plugins",
-    "trust-swift-macros",
-    "test",
-    "build",
-    "acknowledgments",
-]
+MAPPED_ACTIONS = {
+    "archive": archive,
+    "upload": upload,
+    "bump-version": bump_version,
+    "export-archive": export_archive,
+    "trust-swift-plugins": trust_swift_plugins,
+    "trust-swift-macros": trust_swift_macros,
+    "test": test,
+    "build": build,
+    "acknowledgments": acknowledgments,
+}
 
 
 def cli():
-    action_index = find_index(sys.argv, lambda arg: arg in ACTIONS)
+    action_index = find_index(sys.argv, lambda arg: arg in MAPPED_ACTIONS.keys())
     if action_index is None:
         raise CLIException("Invalid action provided")
 
     action = sys.argv[action_index]
     sys.argv = removed(sys.argv, action_index)
 
-    if action == "archive":
-        archive()
-    if action == "upload":
-        upload()
-    if action == "bump-version":
-        bump_version()
-    if action == "export-archive":
-        export_archive()
-    if action == "trust-swift-plugins":
-        trust_swift_plugins()
-    if action == "trust-swift-macros":
-        trust_swift_macros()
-    if action == "test":
-        test()
-    if action == "build":
-        build()
-    if action == "acknowledgments":
-        acknowledgments()
+    MAPPED_ACTIONS[action]()
 
 
 class CLIException(Exception):
