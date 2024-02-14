@@ -8,6 +8,7 @@ from xctools_kamaalio.actions.archive import archive
 from xctools_kamaalio.actions.bump_version import bump_version
 from xctools_kamaalio.actions.export_archive import export_archive
 from xctools_kamaalio.actions.trust_swift_plugins import trust_swift_plugins
+from xctools_kamaalio.actions.trust_swift_macros import trust_swift_macros
 from xctools_kamaalio.actions.test import test
 from xctools_kamaalio.actions.build import build
 
@@ -18,6 +19,7 @@ ACTIONS = [
     "bump-version",
     "export-archive",
     "trust-swift-plugins",
+    "trust-swift-macros",
     "test",
     "build",
     "acknowledgments",
@@ -42,6 +44,8 @@ def cli():
         export_archive()
     if action == "trust-swift-plugins":
         trust_swift_plugins()
+    if action == "trust-swift-macros":
+        trust_swift_macros()
     if action == "test":
         test()
     if action == "build":
