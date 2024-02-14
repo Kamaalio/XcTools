@@ -1,5 +1,6 @@
 import json
 import subprocess
+from enum import Enum
 from pathlib import Path
 from typing import Literal
 
@@ -60,49 +61,16 @@ class XcTools:
         updater.bump_version(build_number=build_number, version_number=version_number)
 
     @classmethod
-    def trust_swift_version(cls, trust_file_path: str):
-        # TODO: DO THIS IN PYTHON INSTEAD
-        cls.__run_command(
-            command=["zsh", "-c", "mkdir -p ~/Library/org.swift.swiftpm/security/"],
-            command_type="create security folder",
+    def trust_swift_macros(cls, trust_file_path: str):
+        cls.__trust_swift_package(
+            trust_file_path=trust_file_path, file_type=TrustModuleTypes.MACROS
         )
-        # TODO: DO THIS IN PYTHON INSTEAD
-        cls.__run_command(
-            command=[
-                "zsh",
-                "-c",
-                "rm -f ~/Library/org.swift.swiftpm/security/plugins.json",
-            ],
-            command_type="remove plugins file",
-        )
-        # TODO: DO THIS IN PYTHON INSTEAD
-        cls.__run_command(
-            command=[
-                "zsh",
-                "-c",
-                "touch ~/Library/org.swift.swiftpm/security/plugins.json",
-            ],
-            command_type="create plugins file",
-        )
-        trust_file = Path(trust_file_path)
-        trust_file_content = json.loads(trust_file.read_text())
-        assert isinstance(trust_file_content, list)
-        trusted_plugins = []
-        for trust_config in trust_file_content:
-            for i in range(0, len(trusted_plugins)):
-                trusted_plugin = trusted_plugins[i]
-                if trusted_plugin["packageIdentity"] == trust_config["packageIdentity"]:
-                    trusted_plugins[i] = trust_config
-                    break
-            else:
-                trusted_plugins.append(trust_config)
-        for item in Path.home().glob("Library/org.swift.swiftpm"):
-            trust_output_file = item / "security/plugins.json"
-            break
-        else:
-            raise XcToolsException("Output file not found")
 
-        trust_output_file.write_text(json.dumps(trusted_plugins, indent=2))
+    @classmethod
+    def trust_swift_plugins(cls, trust_file_path: str):
+        cls.__trust_swift_package(
+            trust_file_path=trust_file_path, file_type=TrustModuleTypes.PLUGINS
+        )
 
     @classmethod
     def test(
@@ -152,6 +120,51 @@ class XcTools:
 
         cls.__run_command(command, "build")
 
+    @classmethod
+    def __trust_swift_package(cls, trust_file_path: str, file_type: "TrustModuleTypes"):
+        # TODO: DO THIS IN PYTHON INSTEAD
+        cls.__run_command(
+            command=["zsh", "-c", "mkdir -p ~/Library/org.swift.swiftpm/security/"],
+            command_type="create security folder",
+        )
+        # TODO: DO THIS IN PYTHON INSTEAD
+        cls.__run_command(
+            command=[
+                "zsh",
+                "-c",
+                f"rm -f ~/Library/org.swift.swiftpm/security/{file_type.name}.json",
+            ],
+            command_type="remove plugins file",
+        )
+        # TODO: DO THIS IN PYTHON INSTEAD
+        cls.__run_command(
+            command=[
+                "zsh",
+                "-c",
+                f"touch ~/Library/org.swift.swiftpm/security/{file_type.name}.json",
+            ],
+            command_type="create plugins file",
+        )
+        trust_file = Path(trust_file_path)
+        trust_file_content = json.loads(trust_file.read_text())
+        assert isinstance(trust_file_content, list)
+        trusted_modules = []
+        for trust_config in trust_file_content:
+            for i in range(0, len(trusted_modules)):
+                trusted_plugin = trusted_modules[i]
+                if trusted_plugin["packageIdentity"] == trust_config["packageIdentity"]:
+                    trusted_modules[i] = trust_config
+                    break
+            else:
+                trusted_modules.append(trust_config)
+        for item in Path.home().glob("Library/org.swift.swiftpm"):
+            trust_output_file = item / f"security/{file_type.name}.json"
+            break
+        else:
+            raise XcToolsException("Output file not found")
+
+        trust_output_file.write_text(json.dumps(trusted_modules, indent=2))
+
     @staticmethod
     def __run_command(command: list[str], command_type: str):
         process = subprocess.Popen(command)
@@ -160,6 +173,11 @@ class XcTools:
             raise XcToolsException(
                 f"Failed {command_type} with status='{status}' on command='{command}'"
             )
+
+
+class TrustModuleTypes(Enum):
+    MACROS = "macros"
+    PLUGINS = "plugins"
 
 
 class XcToolsException(Exception):
