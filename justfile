@@ -13,11 +13,11 @@ build:
     just install-self
     python3 -m build
 
-upload:
+upload: build
     #!/bin/bash
 
     . .venv/bin/activate
-    twine upload dist/*
+    twine upload dist/* --verbose
 
 test: install-self
     #!/bin/bash
