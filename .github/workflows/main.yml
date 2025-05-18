@@ -97,9 +97,6 @@ jobs:
       - name: Initialize environment
         run: just init-venv
 
-      - name: Build
-        run: just build
-
       - name: Create PyPi configuration file
         run: |
           rm -rf ~/.pypirc

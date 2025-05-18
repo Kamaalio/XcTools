@@ -2,4 +2,4 @@ build==0.10.0
 click==8.1.6
 kamaalpy==0.1.0
 pytest==7.4.3
-twine==4.0.2
+twine==6.1.0
