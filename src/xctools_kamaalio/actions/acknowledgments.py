@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass
+import glob
 import json
 import os
 from pathlib import Path
@@ -10,7 +11,7 @@ from typing import TypedDict
 def acknowledgments():
     arguments = parse_arguments()
 
-    packages_directory = get_packages_directory(scheme=arguments["scheme"])
+    packages_directory = get_packages_directory(project=arguments["project"])
     packages_licenses = get_packages_licenses(packages_directory=packages_directory)
 
     package_file_content = decode_package_file()
@@ -19,7 +20,7 @@ def acknowledgments():
     )
 
     contributors_list = subprocess.getoutput(
-        f'git log "--pretty=format:%an <%ae>"'
+        'git log "--pretty=format:%an <%ae>"'
     ).splitlines()
     formatted_contributors = format_contributors(contributors_list=contributors_list)
     acknowledgements = Acknowledgements(
@@ -44,9 +45,9 @@ def format_contributors(contributors_list: list[str]):
         )
         email = splitted_contributor_entry[-1].strip().replace("<", "").replace(">", "")
 
-        contributor_names_mapped_by_emails[
-            email
-        ] = contributor_names_mapped_by_emails.get(email, []) + [contributor_name]
+        contributor_names_mapped_by_emails[email] = (
+            contributor_names_mapped_by_emails.get(email, []) + [contributor_name]
+        )
 
     contributors: list[Contributor] = []
     for email, contributor_names in contributor_names_mapped_by_emails.items():
@@ -126,13 +127,13 @@ def parse_arguments():
 
                 return sys.argv[index + 2]
 
-        if arg == "--scheme" and (scheme := get_next_value()):
-            arguments["scheme"] = scheme
+        if arg == "--project" and (project := get_next_value()):
+            arguments["project"] = project
         if arg == "--output" and (output := get_next_value()):
             arguments["output"] = output
 
-    if arguments.get("scheme") is None:
-        raise Exception("Please provide a scheme with the --scheme flag")
+    if arguments.get("project") is None:
+        raise Exception("Please provide a project with the --project flag")
 
     if arguments.get("output") is None:
         raise Exception("Please provide a output path with the --output flag")
@@ -149,17 +150,31 @@ def get_path_from_root_ending_with(search_string: str) -> str | None:
             return file
 
 
-def get_packages_licenses(packages_directory: str):
+def get_packages_licenses(packages_directory: Path) -> dict[str, str]:
+    """
+    Extracts license information from packages in the specified directory.
+    This function iterates through the subdirectories of the given `packages_directory`,
+    looking for files containing the word "license" in their name. It reads the content
+    of these files and maps each package name (subdirectory name) to its license text.
+    Args:
+        packages_directory (Path): The path to the directory containing package subdirectories.
+    Returns:
+        package_licenses (dict[str, str]): A dictionary where the keys are package names and the
+        values are the corresponding license texts.
+    """
+
+    assert packages_directory.is_dir()
+
     licenses: dict[str, str] = {}
-    for root, _, files in os.walk(packages_directory):
-        if "LICENSE" not in files:
+    for content_path in packages_directory.iterdir():
+        if not content_path.is_dir():
             continue
 
-        package_name = root.split("/")[-1]
+        for package_path in content_path.iterdir():
+            if not package_path.is_file() or "license" not in package_path.name.lower():
+                continue
 
-        license_path = os.path.join(root, "LICENSE")
-        with open(license_path, "r") as file:
-            licenses[package_name] = file.read()
+            licenses[content_path.name] = package_path.read_text()
 
     return licenses
 
@@ -212,23 +227,52 @@ def decode_package_file() -> "PackageFileContent":
     raise Exception("Workspace not found at root")
 
 
-def get_packages_directory(scheme: str):
+def get_xcode_derived_data_base() -> Path:
+    try:
+        out = (
+            subprocess.check_output(
+                [
+                    "defaults",
+                    "read",
+                    "com.apple.dt.Xcode",
+                    "IDECustomDerivedDataLocation",
+                ],
+                stderr=subprocess.DEVNULL,
+            )
+            .decode()
+            .strip()
+        )
+    except subprocess.CalledProcessError:
+        out = ""
+
+    if not out:
+        return Path.home() / "Library/Developer/Xcode/DerivedData"
+
+    return Path(os.path.expanduser(out))
+
+
+def find_derived_data_for_project(project_name: str) -> Path:
+    base = get_xcode_derived_data_base()
+    pattern = str(base / f"{project_name}-*")
+    matches = glob.glob(pattern)
+    if not matches:
+        raise FileNotFoundError(
+            f"No DerivedData folder matching '{project_name}-*' in {base}"
+        )
+
+    matches.sort(key=lambda p: Path(p).stat().st_mtime, reverse=True)
+
+    return Path(matches[0])
+
+
+def get_packages_directory(project: str):
     project_path = get_path_from_root_ending_with(search_string=".xcodeproj")
     if project_path is None:
-        raise Exception("Project not found at root")
+        raise FileNotFoundError("Project not found at root")
 
-    output = subprocess.getoutput(
-        f'xcodebuild -project {project_path} -target "{scheme}" -showBuildSettings'
-    )
+    derived_data_base = find_derived_data_for_project(project_name=project)
 
-    output_search_line = "    BUILD_DIR = "
-    for line in output.splitlines():
-        if output_search_line in line:
-            return line.replace(output_search_line, "").replace(
-                "Build/Products", "SourcePackages/checkouts"
-            )
-
-    raise Exception(f"Build directory not found from {output=}")
+    return derived_data_base / "SourcePackages/checkouts"
 
 
 @dataclass
@@ -274,7 +318,7 @@ class AcknowledgementPackage:
 
 
 class Arguments(TypedDict):
-    scheme: str
+    project: str
     output: str
 
 
